@@ -194,6 +194,7 @@ static int eth_get_efuse_mac(struct eth_device *dev)
 	   return -1;
 #else
 #define MAC_MAX_LEN	17
+#define MAC_MAX_LEN_BINARY_FORMAT 6
 	int i = 0;
 	int err = 0, exist = 0;
 	ssize_t keysize = 0;
@@ -212,7 +213,7 @@ static int eth_get_efuse_mac(struct eth_device *dev)
 	if (err)
 		return err;
 
-	if (keysize != MAC_MAX_LEN) {
+	if (keysize != MAC_MAX_LEN && keysize != MAC_MAX_LEN_BINARY_FORMAT) {
 		return -EINVAL;
 	}
 
@@ -221,8 +222,14 @@ static int eth_get_efuse_mac(struct eth_device *dev)
 		return err;
 
 	for (i=0; i<6; i++) {
-		buf[i*3 + 2] = '\0';
-		dev->enetaddr[i] = simple_strtoul((char *)&buf[i*3], NULL, 16);
+		if (keysize == MAC_MAX_LEN) {
+			buf[i*3 + 2] = '\0';
+			dev->enetaddr[i] = simple_strtoul((char *)&buf[i*3], NULL, 16);
+		} else if (keysize == MAC_MAX_LEN_BINARY_FORMAT) {
+			dev->enetaddr[i] = buf[i];
+		} else {
+			return -EINVAL;
+		}
 	}
 
 	return key_unify_uninit();

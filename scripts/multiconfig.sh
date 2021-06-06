@@ -126,6 +126,10 @@ do_board_defconfig () {
 	if [ ! -r $defconfig_path ]; then
 		defconfig_path=$srctree/customer/board/defconfigs/$1
 	fi
+	# JetHome configs folder support
+	if [ ! -r $defconfig_path ]; then
+		defconfig_path=$srctree/board/jethome/defconfigs/$1
+	fi
 
 	if [ ! -r $defconfig_path ]; then
 		echo >&2 "***"

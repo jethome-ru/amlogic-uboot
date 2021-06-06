@@ -1033,6 +1033,7 @@ source "board/xaeniax/Kconfig"
 source "board/zipitz2/Kconfig"
 
 source "board/amlogic/Kconfig"
+source "board/jethome/Kconfig"
 source "customer/board/Kconfig"
 
 source "arch/arm/Kconfig.debug"

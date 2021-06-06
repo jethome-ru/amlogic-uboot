@@ -1,0 +1,22 @@
+if JETHUB_D1_V1
+
+config SYS_CPU
+	string
+	default "armv8"
+
+config SYS_BOARD
+	string
+	default "jethub_d1_v1"
+
+config SYS_VENDOR
+	string
+	default "jethome"
+
+config SYS_SOC
+	string
+	default "axg"
+
+config SYS_CONFIG_NAME
+	default "jethub_d1_v1"
+
+endif
