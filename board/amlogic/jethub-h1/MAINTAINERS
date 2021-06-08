@@ -1,0 +1,6 @@
+JetHome JetHub J80
+M:	Vyacheslav Bocharov <devel@lexina.in>
+S:	Maintained
+L:	u-boot-amlogic@groups.io
+F:	board/amlogic/jethub-h1/
+F:	configs/jethub-h1_defconfig
