@@ -12,6 +12,9 @@ obj-$(CONFIG_HASH) += hash.o
 obj-$(CONFIG_HUSH_PARSER) += cli_hush.o
 obj-$(CONFIG_AUTOBOOT) += autoboot.o
 
+obj-$(CONFIG_AML_STORAGE) += partitions.o
+obj-$(CONFIG_AML_STORAGE) += aml_dt.o
+
 # This option is not just y/n - it can have a numeric value
 ifdef CONFIG_BOOT_RETRY_TIME
 obj-y += bootretry.o

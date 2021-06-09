@@ -6,6 +6,7 @@
 #ccflags-y += -DET_DEBUG -DDEBUG
 
 obj-$(CONFIG_PARTITIONS) 	+= part.o
+obj-$(CONFIG_AML_PARTITION)	     += part_aml.o
 obj-$(CONFIG_$(SPL_)MAC_PARTITION)   += part_mac.o
 obj-$(CONFIG_$(SPL_)DOS_PARTITION)   += part_dos.o
 obj-$(CONFIG_$(SPL_)ISO_PARTITION)   += part_iso.o

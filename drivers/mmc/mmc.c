@@ -25,10 +25,90 @@
 #include <linux/list.h>
 #include <div64.h>
 #include "mmc_private.h"
+#include <u-boot/crc.h>
+#include <rand.h>
+
+#include <emmc_partitions.h>
+#include <partition_table.h>
+#include <amlogic/storage.h>
+#include <asm/arch/boot.h>
+//#include <asm/arch/secure_apb.h>
+//#include <asm/arch/sd_emmc.h>
+
+struct aml_pattern aml_pattern_table[] = {
+	AML_PATTERN_ELEMENT(MMC_PATTERN_NAME, CALI_PATTERN),
+	AML_PATTERN_ELEMENT(MMC_MAGIC_NAME, MAGIC_PATTERN),
+	AML_PATTERN_ELEMENT(MMC_RANDOM_NAME, RANDOM_PATTERN),
+};
 
 #define DEFAULT_CMD6_TIMEOUT_MS  500
 
 static int mmc_set_signal_voltage(struct mmc *mmc, uint signal_voltage);
+
+extern int emmc_probe(uint32_t init_flag);
+
+bool emmckey_is_access_range_legal (struct mmc *mmc, ulong start, lbaint_t blkcnt) {
+	ulong key_start_blk, key_end_blk;
+	u64 key_glb_offset;
+	struct partitions * part = NULL;
+	struct virtual_partition *vpart = NULL;
+	if (IS_MMC(mmc)) {
+		vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+		part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+		key_glb_offset = part->offset + vpart->offset;
+		key_start_blk = (key_glb_offset / MMC_BLOCK_SIZE);
+		key_end_blk = ((key_glb_offset + vpart->size) / MMC_BLOCK_SIZE - 1);
+		if (!(info_disprotect & DISPROTECT_KEY)) {
+			if ((key_start_blk <= (start + blkcnt -1))
+				&& (key_end_blk >= start)
+				&& (blkcnt != start)) {
+				pr_info("%s, keys %ld, keye %ld, start %ld, blkcnt %ld\n",
+						mmc->cfg->name, key_start_blk,
+						key_end_blk, start, blkcnt);
+				pr_err("Emmckey: Access range is illegal!\n");
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
+int emmc_boot_chk(struct mmc *mmc)
+{
+	u32 val = 0;
+
+	if (strcmp(mmc->dev->name, "emmc"))
+		return 0;
+
+	val = meson_get_boot_device();
+	pr_info("SEC_AO_SEC_GP_CFG0&AO_BOOT_DEVICE = %x\n", val);
+	if (val == 0x1)
+		return 1;
+	return 0;
+}
+
+#if CONFIG_IS_ENABLED(MMC_TINY)
+static struct mmc mmc_static;
+struct mmc *find_mmc_device(int dev_num)
+{
+	return &mmc_static;
+}
+
+void mmc_do_preinit(void)
+{
+	struct mmc *m = &mmc_static;
+#ifdef CONFIG_FSL_ESDHC_ADAPTER_IDENT
+	mmc_set_preinit(m, 1);
+#endif
+	if (m->preinit)
+		mmc_start_init(m);
+}
+
+struct blk_desc *mmc_get_blk_desc(struct mmc *mmc)
+{
+	return &mmc->block_dev;
+}
+#endif
 
 #if !CONFIG_IS_ENABLED(DM_MMC)
 
@@ -850,6 +930,12 @@ static int __mmc_switch(struct mmc *mmc, u8 set, u8 index, u8 value,
 	return -ETIMEDOUT;
 }
 
+int mmc_get_ext_csd(struct mmc *mmc, u8 *ext_csd)
+{
+	return mmc_send_ext_csd(mmc, ext_csd);
+}
+
+
 int mmc_switch(struct mmc *mmc, u8 set, u8 index, u8 value)
 {
 	return __mmc_switch(mmc, set, index, value, true);
@@ -861,6 +947,26 @@ int mmc_boot_wp(struct mmc *mmc)
 }
 
 #if !CONFIG_IS_ENABLED(MMC_TINY)
+u8 ext_csd_w[] = {191, 187, 185, 183, 179, 178, 177, 175,
+					173, 171, 169, 167, 165, 164, 163, 162,
+					161, 156, 155, 143, 140, 136, 134, 133,
+					132, 131, 62, 59, 56, 52, 37, 34,
+					33, 32, 31, 30, 29, 22, 17, 16, 15};
+
+int mmc_set_ext_csd(struct mmc *mmc, u8 index, u8 value)
+{
+	int ret = -21, i;
+
+	for (i = 0; i < sizeof(ext_csd_w); i++) {
+		if (ext_csd_w[i] == index)
+			break;
+	}
+	if (i != sizeof(ext_csd_w))
+		ret = mmc_switch(mmc, EXT_CSD_CMD_SET_NORMAL, index, value);
+
+	return ret;
+}
+
 static int mmc_set_card_speed(struct mmc *mmc, enum bus_mode mode,
 			      bool hsdowngrade)
 {
@@ -2338,6 +2444,12 @@ static int mmc_startup_v4(struct mmc *mmc)
 	}
 #endif
 
+	/* dev life time estimate type A/B */
+	mmc->dev_lifetime_est_typ_a
+		= ext_csd[EXT_CSD_DEV_LIFETIME_EST_TYP_A];
+	mmc->dev_lifetime_est_typ_b
+		= ext_csd[EXT_CSD_DEV_LIFETIME_EST_TYP_B];
+
 	/*
 	 * Host needs to enable ERASE_GRP_DEF bit if device is
 	 * partitioned. This bit will be lost every time after a reset
@@ -2906,10 +3018,69 @@ static int mmc_complete_init(struct mmc *mmc)
 		mmc->has_init = 1;
 	return err;
 }
+ 
+void mmc_write_cali_mattern(void *addr, struct aml_pattern *table)
+{
+	int i = 0;
+	unsigned int s = 10;
+	u32 *mattern = (u32 *)addr;
+	struct virtual_partition *vpart =
+		aml_get_virtual_partition_by_name(table->name);
+	for (i = 0;i < (vpart->size)/4 - 1;i++) {
+		if (!strcmp(table->name, "random"))
+			mattern[i] = rand_r(&s);
+		else
+			mattern[i] = table->pattern;
+	}
+	mattern[i] = crc32(0, (u8 *)addr, (vpart->size - 4));
+	return;
+}
+
+int mmc_pattern_check(struct mmc *mmc, struct aml_pattern *table)
+{
+	void *addr = NULL;
+	u64 cnt = 0, n = 0, blk = 0;
+	u32 *buf = NULL;
+	u32 crc32_s = 0;
+	struct partitions *part = NULL;
+	struct virtual_partition *vpart = NULL;
+
+	vpart = aml_get_virtual_partition_by_name(table->name);
+
+	addr = (void *)malloc(vpart->size);
+	if (!addr) {
+		printf("%s malloc failed\n", table->name);
+		return 1;
+	}
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+	blk = (part->offset + vpart->offset) / mmc->read_bl_len;
+	cnt = vpart->size / mmc->read_bl_len;
+	n = blk_dread(mmc_get_blk_desc(mmc), blk, cnt, addr);
+	if (n != cnt) {
+		printf("read pattern failed\n");
+		free(addr);
+		return 1;
+	} else {
+		buf = (u32 *)addr;
+		crc32_s = crc32(0, (u8 *)addr, (vpart->size - 4));
+		if (crc32_s != buf[vpart->size/4 - 1]) {
+			printf("check %s failed,need to write\n",
+						table->name);
+			mmc_write_cali_mattern(addr, table);
+			n = blk_dwrite(mmc_get_blk_desc(mmc), blk, cnt, addr);
+			printf("several 0x%x pattern blocks write %s\n",
+				table->pattern, (n == cnt) ? "OK" : "ERROR");
+		}
+		printf("crc32_s:0x%x == storage crc_pattern:0x%x!!!\n",
+				crc32_s, buf[vpart->size/4 - 1]);
+	}
+	free(addr);
+	return (n == cnt) ? 0 : 1;
+}
 
 int mmc_init(struct mmc *mmc)
 {
-	int err = 0;
+	int err = 0, i;
 	__maybe_unused ulong start;
 #if CONFIG_IS_ENABLED(DM_MMC)
 	struct mmc_uclass_priv *upriv = dev_get_uclass_priv(mmc->dev);
@@ -2928,8 +3099,23 @@ int mmc_init(struct mmc *mmc)
 		err = mmc_complete_init(mmc);
 	if (err)
 		pr_info("%s: %d, time %lu\n", __func__, err, get_timer(start));
+	info_disprotect |= DISPROTECT_KEY;
+	if (IS_MMC(mmc)) {
+		if (!is_partition_checked) {
+			if (mmc_device_init(mmc) == 0) {
+				is_partition_checked = true;
+				pr_info("eMMC/TSD partition table have been checked OK!\n");
+				for (i = 0; i < ARRAY_SIZE(aml_pattern_table); i++) {
+					int j;
+					j = mmc_pattern_check(mmc, &aml_pattern_table[i]);
 
+				}
+			}
+		}
+	}
+	info_disprotect &= ~DISPROTECT_KEY;
 	return err;
+
 }
 
 #if CONFIG_IS_ENABLED(MMC_UHS_SUPPORT) || \
@@ -3109,4 +3295,93 @@ __weak int mmc_get_env_dev(void)
 #else
 	return 0;
 #endif
+}
+
+extern unsigned long blk_dwrite(struct blk_desc *block_dev, lbaint_t start,
+		lbaint_t blkcnt, const void *buffer);
+
+int mmc_key_write(unsigned char *buf, unsigned int size, uint32_t *actual_lenth)
+{
+	ulong start, start_blk, blkcnt, ret;
+	unsigned char * temp_buf = buf;
+	int i = 2, dev = EMMC_DTB_DEV;
+	struct partitions * part = NULL;
+	struct mmc *mmc;
+	struct virtual_partition *vpart = NULL;
+	vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+
+	mmc = find_mmc_device(dev);
+
+	start = part->offset + vpart->offset;
+	start_blk = (start / MMC_BLOCK_SIZE);
+	blkcnt = (size / MMC_BLOCK_SIZE);
+	info_disprotect |= DISPROTECT_KEY;
+	do {
+		ret = blk_dwrite(mmc_get_blk_desc(mmc), start_blk, blkcnt, temp_buf);
+		if (ret != blkcnt) {
+			pr_err("[%s] %d, mmc_bwrite error\n",
+				__func__, __LINE__);
+			return 1;
+		}
+		start_blk += vpart->size / MMC_BLOCK_SIZE;
+	} while (--i);
+	info_disprotect &= ~DISPROTECT_KEY;
+	return 0;
+}
+
+extern unsigned long blk_derase(struct blk_desc *block_dev, lbaint_t start,
+		lbaint_t blkcnt);
+
+int mmc_key_erase(void)
+{
+	ulong start, start_blk, blkcnt, ret;
+	struct partitions * part = NULL;
+	struct virtual_partition *vpart = NULL;
+	struct mmc *mmc;
+	vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+	int dev = EMMC_DTB_DEV;
+
+	mmc = find_mmc_device(dev);
+	start = part->offset + vpart->offset;
+	start_blk = (start / MMC_BLOCK_SIZE);
+	blkcnt = (vpart->size / MMC_BLOCK_SIZE) * 2;//key and backup key
+	info_disprotect |= DISPROTECT_KEY;
+	ret = blk_derase(mmc_get_blk_desc(mmc), start_blk, blkcnt);
+	info_disprotect &= ~DISPROTECT_KEY;
+	if (ret) {
+		pr_err("[%s] %d mmc_berase error\n",
+				__func__, __LINE__);
+		return 1;
+	}
+	return 0;
+}
+
+
+int mmc_key_read(unsigned char *buf, unsigned int size, uint32_t *actual_lenth)
+{
+	ulong start, start_blk, blkcnt, ret;
+	int dev = EMMC_DTB_DEV;
+	unsigned char *temp_buf = buf;
+	struct partitions * part = NULL;
+	struct mmc *mmc;
+	struct virtual_partition *vpart = NULL;
+	vpart = aml_get_virtual_partition_by_name(MMC_KEY_NAME);
+	part = aml_get_partition_by_name(MMC_RESERVED_NAME);
+
+	mmc = find_mmc_device(dev);
+	*actual_lenth =  0x40000;/*key size is 256KB*/
+	start = part->offset + vpart->offset;
+	start_blk = (start / MMC_BLOCK_SIZE);
+	blkcnt = (size / MMC_BLOCK_SIZE);
+	info_disprotect |= DISPROTECT_KEY;
+	ret = blk_dread(mmc_get_blk_desc(mmc), start_blk, blkcnt, temp_buf);
+	info_disprotect &= ~DISPROTECT_KEY;
+	if (ret != blkcnt) {
+		pr_err("[%s] %d, mmc_bread error\n",
+			__func__, __LINE__);
+		return 1;
+	}
+	return 0;
 }

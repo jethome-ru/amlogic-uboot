@@ -846,6 +846,11 @@ config CMD_DEMO
 	  option is to use sandbox and pass the -d point to sandbox's
 	  u-boot.dtb file.
 
+config AML_STORAGE
+	bool "aml storage support"
+	help
+	  storage cmd support
+
 config CMD_DFU
 	bool "dfu"
 	select DFU
