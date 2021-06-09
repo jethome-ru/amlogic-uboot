@@ -6,6 +6,8 @@
 #ifndef __PINCTRL_H
 #define __PINCTRL_H
 
+#include <dm/device.h>
+
 #define PINNAME_SIZE	10
 #define PINMUX_SIZE	40
 
