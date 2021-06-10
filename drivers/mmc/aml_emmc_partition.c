@@ -1394,6 +1394,8 @@ int mmc_device_init (struct mmc *mmc)
 		if (gpt_priority) {
 			fill_ept_by_gpt(mmc, p_iptbl_ept);
 			printf("and gpt has higher priority, so ept had been update\n");
+			trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
+			gpt_restore(mmc_get_blk_desc(mmc), str_disk_guid, disk_partition, dcount);
 		} else {
 			gpt_restore(mmc_get_blk_desc(mmc), str_disk_guid, disk_partition, dcount);
 			printf("but EPT has higher priority, so gpt had been recover\n");
