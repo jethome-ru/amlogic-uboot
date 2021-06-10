@@ -87,6 +87,7 @@ int uuid_str_valid(const char *uuid)
 }
 
 #ifdef CONFIG_PARTITION_TYPE_GUID
+
 static const struct {
 	const char *string;
 	efi_guid_t guid;
@@ -100,6 +101,25 @@ static const struct {
 	{"swap",	PARTITION_LINUX_SWAP_GUID},
 	{"lvm",		PARTITION_LINUX_LVM_GUID},
 	{"u-boot-env",	PARTITION_U_BOOT_ENVIRONMENT},
+#ifdef CONFIG_AML_GPT
+		{"bootloader",	PARTITION_ANDROID_BOOTLOADER_GUID},
+		{"bootloader2",	PARTITION_ANDROID_BOOTLOADER2_GUID},
+		{"recovery",	PARTITION_ANDROID_RECOVERY_GUID},
+		{"misc",		PARTITION_ANDROID_MISC_GUID},
+		{"metadata",	PARTITION_ANDROID_METADATA_GUID},
+		{"system",		PARTITION_ANDROID_SYSTEM_GUID},
+		{"cache",		PARTITION_ANDROID_CACHE_GUID},
+		{"data",		PARTITION_ANDROID_DATA_GUID},
+		{"persistent",	PARTITION_ANDROID_PERSISTENT_GUID},
+		{"vendor",		PARTITION_ANDROID_VENDOR_GUID},
+		{"config",		PARTITION_ANDROID_CONFIG_GUID},
+		{"factory",		PARTITION_ANDROID_FACTORY_GUID},
+		{"factory_alt",	PARTITION_ANDROID_FACTORY_ALT_GUID},
+		{"fastboot",	PARTITION_ANDROID_FASTBOOT_GUID},
+		{"tertiary",	PARTITION_ANDROID_TERTIARY_GUID},
+		{"oem",			PARTITION_ANDROID_OEM_GUID},
+		{"default",		PARTITION_LINUX_DEFAULT_GUID},
+#endif
 };
 
 /*
