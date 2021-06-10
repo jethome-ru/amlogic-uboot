@@ -25,9 +25,6 @@
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN		(96*1024*1024)
 
-/* for uboot envrionment use */
-#define CONFIG_DDR_SIZE					1024
-
 /* dram */
 #define PHYS_SDRAM_1_BASE					0x00000000UL
 #define PHYS_SDRAM_1_SIZE					(CONFIG_DDR_SIZE << 20)

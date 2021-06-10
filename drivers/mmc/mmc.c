@@ -2123,7 +2123,7 @@ int mmc_init(struct mmc *mmc)
 #ifdef MMC_HS400_MODE
 	struct aml_card_sd_info *aml_priv = mmc->priv;
 #endif
-	int err = IN_PROGRESS, i;
+	int err = IN_PROGRESS;
 	unsigned start;
 
 	if (mmc->has_init)
@@ -2153,6 +2153,7 @@ int mmc_init(struct mmc *mmc)
 	if (aml_is_emmc_tsd(mmc)) { // eMMC OR TSD
 		if (!is_partition_checked) {
 			if (mmc_device_init(mmc) == 0) {
+				int i;
 				is_partition_checked = true;
 				printf("eMMC/TSD partition table have been checked OK!\n");
 				for (i = 0; i < ARRAY_SIZE(aml_pattern_table); i++)
