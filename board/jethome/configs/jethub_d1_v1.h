@@ -6,8 +6,8 @@
  *
  */
 
-#ifndef __AXG_S400_V1_H__
-#define __AXG_S400_V1_H__
+#ifndef __JETHUB_D1_V1_H__
+#define __JETHUB_D1_V1_H__
 
 #include <asm/arch/cpu.h>
 
@@ -454,7 +454,7 @@
 
 #define		CONFIG_PARTITIONS 1
 #define 	CONFIG_SYS_NO_FLASH  1
-//#define     CONFIG_AML_GPT
+#define		CONFIG_AML_GPT 1
 
 
 /* vpu */
@@ -623,7 +623,7 @@
 //#undef CONFIG_AML_NAND
 
 //unify build for generate encrypted bootloader "u-boot.bin.encrypt"
-#define CONFIG_AML_CRYPTO_UBOOT   0
+#define CONFIG_AML_CRYPTO_UBOOT   1
 
 //unify build for generate encrypted kernel image
 //SRC : "board/amlogic/axg_s400_v1/boot.img"

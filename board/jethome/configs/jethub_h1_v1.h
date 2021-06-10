@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef __JETHOME_ARMBIAN_J80_V1_H__
-#define __JETHOME_ARMBIAN_J80_V1_H__
+#ifndef __JETHUB_H1_V1_H__
+#define __JETHUB_H1_V1_H__
 
 //#define CONFIG_VALIDATE_LICENSE 
 
@@ -373,6 +373,7 @@
 
 #define	CONFIG_PARTITIONS 1
 #define CONFIG_SYS_NO_FLASH  1
+#define	CONFIG_AML_GPT 1
 
 /* vpu */
 #define CONFIG_AML_VPU 1
@@ -515,7 +516,7 @@
 //#undef CONFIG_AML_NAND
 
 //unify build for generate encrypted bootloader "u-boot.bin.encrypt"
-#define CONFIG_AML_CRYPTO_UBOOT   0
+#define CONFIG_AML_CRYPTO_UBOOT   1
 
 //unify build for generate encrypted kernel image
 //SRC : "board/amlogic/(board)/boot.img"
