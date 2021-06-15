@@ -1207,7 +1207,9 @@ int confirm_gpt(struct mmc *mmc)
 		if (gpt_priority) {
 			/*gpt have higher priority update ept*/
 			ret = fill_ept_by_gpt(mmc, p_iptbl_ept);
-			printf("and gpt has higher priority, so ept had been update\n");
+			trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
+			gpt_restore(&mmc->block_dev, str_disk_guid, disk_partition, dcount);
+			printf("and gpt has higher priority, so ept had been update and gpt is rebuilded.\n");
 		} else {
 			/*ept have higher priority update gpt*/
 			ret = gpt_restore(&mmc->block_dev, str_disk_guid, disk_partition, dcount);

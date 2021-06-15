@@ -864,7 +864,7 @@ static int amlmmc_erase_allbootloader(int dev, struct mmc *mmc)
 static int amlmmc_erase_by_part(int argc, char *const argv[])
 {
 	int ret = CMD_RET_USAGE;
-	char *name = "logo";
+	char *name = "bootloader";
 	struct mmc *mmc;
 	int dev;
 
