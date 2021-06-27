@@ -476,21 +476,22 @@ int gpt_fill_pte(block_dev_desc_t *dev_desc,
 		lbaint_t start = partitions[i].start;
 		lbaint_t size = partitions[i].size;
 
+		offset = start + size;
+#if 0
 		if (start) {
 			offset = start + size;
 		} else {
 			start = offset;
 			offset += size;
 		}
-
+#endif
 		/*
 		 * If our partition overlaps with either the GPT
 		 * header, or the partition entry, reject it.
 		 */
 		if (((start < hdr_end && hdr_start < (start + size)) ||
 		     (start < pte_end && pte_start < (start + size)))) {
-			printf("Partition overlap\n");
-			return -1;
+			printf("Warning: partition %s overlap\n",partitions[i].name);
 		}
 
 		gpt_e[i].starting_lba = cpu_to_le64(start);
