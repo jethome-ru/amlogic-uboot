@@ -34,7 +34,9 @@
 #endif
 /* debug info*/
 #define CONFIG_MPT_DEBUG 	(0)
-#define GPT_PRIORITY             (1)
+#ifndef GPT_PRIORITY
+#define GPT_PRIORITY             (0)
+#endif
 
 #define apt_err(fmt, ...) printf( "%s()-%d: " fmt , \
                   __func__, __LINE__, ##__VA_ARGS__)
@@ -1050,7 +1052,7 @@ int is_gpt_changed(struct mmc *mmc, struct _iptbl *p_iptbl_ept)
 
 		offset = le64_to_cpu(gpt_pte[i].starting_lba<<9ULL);
 		if (partitions[i].offset != offset) {
-			printf("Caution! GPT offset had been changed\n");
+			printf("Caution! GPT offset had been changed: gpt:%llu ept:%llu gptname:%ls name:%s\n",offset, partitions[i].offset, (wchar_t *)gpt_pte[i].partition_name, partitions[i].name);
 			gpt_changed = 1;
 			break;
 		}
@@ -1140,16 +1142,16 @@ void trans_ept_to_diskpart(struct _iptbl *ept, disk_partition_t *disk_part) {
 	struct partitions *part = ept->partitions;
 	int count = ept->count;
 	int i;
-	for (i = 0; i < count - 1; i++) {
-		disk_part[i].start = part[i + 1].offset >> 9;
-		strcpy((char *)disk_part[i].name, part[i+1].name);
-		strcpy((char *)disk_part[i].type_guid, part[i+1].name);
+	for (i = 0; i < count; i++) {
+		disk_part[i].start = part[i].offset >> 9;
+		strcpy((char *)disk_part[i].name, part[i].name);
+		strcpy((char *)disk_part[i].type_guid, part[i].name);
 		gen_rand_uuid_str(disk_part[i].uuid, UUID_STR_FORMAT_STD);
 		disk_part[i].bootable = 0;
-		if ( i == (count - 2))
-			disk_part[i].size = (part[i + 1].size - 34 * 512) >> 9;
+		if ( i == (count - 1))
+			disk_part[i].size = (part[i].size - 34 * 512) >> 9;
 		else
-			disk_part[i].size = (part[i + 1].size) >> 9;
+			disk_part[i].size = (part[i].size) >> 9;
 	}
 	return;
 }
@@ -1181,8 +1183,8 @@ int confirm_gpt(struct mmc *mmc)
 	disk_partition_t *disk_partition;
 	block_dev_desc_t *dev_desc = &mmc->block_dev;
 
-	/*remove bootloader partition*/
-	dcount = p_iptbl_ept->count - 1;
+	/* disabled: remove bootloader partition*/
+	dcount = p_iptbl_ept->count;
 	if (dcount < 1)
 		return 1;
 
@@ -1207,13 +1209,21 @@ int confirm_gpt(struct mmc *mmc)
 		if (gpt_priority) {
 			/*gpt have higher priority update ept*/
 			ret = fill_ept_by_gpt(mmc, p_iptbl_ept);
-			trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
-			gpt_restore(&mmc->block_dev, str_disk_guid, disk_partition, dcount);
-			printf("and gpt has higher priority, so ept had been update and gpt is rebuilded.\n");
+			if (ret) {
+				printf("and gpt has higher priority, but corrupted, so gpt is rebuilded from ept.\n");
+				ret = gpt_restore(&mmc->block_dev, str_disk_guid, disk_partition, dcount);
+			} else {
+				trans_ept_to_diskpart(p_iptbl_ept, disk_partition);
+				gpt_restore(&mmc->block_dev, str_disk_guid, disk_partition, dcount);
+				printf("and gpt has higher priority, so ept had been update and gpt is rebuilded.\n");
+			}
+			_dump_part_tbl(p_iptbl_ept->partitions, p_iptbl_ept->count);
+
 		} else {
 			/*ept have higher priority update gpt*/
 			ret = gpt_restore(&mmc->block_dev, str_disk_guid, disk_partition, dcount);
 			printf("but ept has higher priority, so gpt had been recover\n");
+			fill_ept_by_gpt(mmc, p_iptbl_ept);
 		}
 	}
 
