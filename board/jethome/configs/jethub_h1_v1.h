@@ -10,7 +10,6 @@
 #ifndef __JETHUB_H1_V1_H__
 #define __JETHUB_H1_V1_H__
 
-//#define CONFIG_VALIDATE_LICENSE 
 
 #ifndef __SUSPEND_FIRMWARE__
 #include <asm/arch/cpu.h>
@@ -57,14 +56,6 @@
 
 /*make compatible with android6 recovery */
 #define CONFIG_DISABLE_DTB_BACKUP 1
-
-/* Bootloader Control Block function
-   That is used for recovery and the bootloader to talk to each other
-  */
-#define CONFIG_BOOTLOADER_CONTROL_BLOCK
-
-/*a/b update */
-//#define CONFIG_CMD_BOOTCTOL_AVB
 
 /* Serial config */
 #define CONFIG_CONS_INDEX 2

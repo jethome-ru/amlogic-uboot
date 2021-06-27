@@ -44,11 +44,6 @@
 /* support ext4*/
 #define CONFIG_CMD_EXT4 1
 
-/* Bootloader Control Block function
-   That is used for recovery and the bootloader to talk to each other
-  */
-#define CONFIG_BOOTLOADER_CONTROL_BLOCK
-
 /* Serial config */
 #define CONFIG_CONS_INDEX 2
 #define CONFIG_BAUDRATE  115200
@@ -220,7 +215,7 @@
                     "run recovery_from_udisk;"\
                 "fi;"\
                 "run recovery_from_flash;"\
-            "fi; "\
+           "fi; "\
             "if test ${wipe_cache} = failed; then "\
                 "run storeargs;"\
                 "if mmcinfo; then "\
@@ -272,12 +267,10 @@
                 "saveenv; "\
             "fi;"\
             "\0"\
-        "bcb_cmd="\
-            "get_avb_mode;"\
-            "get_valid_slot;"\
-            "\0"\
         "upgrade_key="\
-            "if gpio input GPIOAO_3; then "\
+            "if gpio input GPIOZ_10; then "\
+                "echo not detect upgrade key;"\
+            "else "\
                 "echo detect upgrade key; run update;"\
             "fi;"\
             "\0"\
@@ -294,7 +287,6 @@
 
 #define CONFIG_PREBOOT  \
             "run armbian_keyman; "\
-            "run bcb_cmd; "\
             "run factory_reset_poweroff_protect;"\
             "run upgrade_check;"\
             "run storeargs;"\
