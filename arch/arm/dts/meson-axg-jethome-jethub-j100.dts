@@ -202,7 +202,7 @@
 	}; //End unifykey
 	soc {
 		usb: usb@ffe09080 {
-			compatible = "amlogic,meson-axg-usb-ctrl";
+			compatible = "amlogic,meson-gxl-usb-ctrl";
 			reg = <0x0 0xffe09080 0x0 0x20>;
 			interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
 			#address-cells = <2>;
@@ -219,7 +219,7 @@
 			phy-names = "usb2-phy1";
 
 			dwc2: usb@ff400000 {
-				compatible = "amlogic,meson-g12a-usb", "snps,dwc2";
+				compatible = "amlogic,meson-gxl-usb", "snps,dwc2";
 				reg = <0x0 0xff400000 0x0 0x40000>;
 				interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
 				clocks = <&clkc CLKID_USB1>;
