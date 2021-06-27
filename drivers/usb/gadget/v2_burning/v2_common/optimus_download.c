@@ -1102,6 +1102,13 @@ int optimus_media_download_verify(const int argc, char * const argv[], char *inf
     /*DWN_MSG("%s %s\n", verifyType, sha1Result);*/
     ret = strcmp(sha1Result, srcSum);
     if (ret) {
+#ifdef CONFIG_AML_GPT
+        if (!strcmp(partName, "bootloader"))
+        {
+            DWN_ERR("Verify failed for bootloader but AML_GPT is used, so some code rewritten by GPT partition table\n");
+            return 0;
+        }
+#endif
         sprintf(info, "failed:Verify Failed with %s, origin sum \"%s\" != gen sum \"%s\"\n", verifyType, srcSum, sha1Result);
         DWN_ERR(info);
         return __LINE__;
