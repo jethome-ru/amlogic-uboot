@@ -622,7 +622,7 @@ static int amlmmc_erase_in_dev(int argc, char *const argv[])
 	cnt = simple_strtoull(argv[4], NULL, 16);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -659,7 +659,7 @@ static int amlmmc_erase_in_card(int argc, char *const argv[])
 	name = argv[2];
 	dev = find_dev_num_by_partition_name (name);
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	offset_addr = simple_strtoull(argv[3], NULL, 16);
@@ -721,7 +721,7 @@ static int amlmmc_erase_in_part(int argc, char *const argv[])
 	get_off_size(mmc, name, offset_addr, size, &blk, &cnt, &sz_byte);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -873,7 +873,7 @@ static int amlmmc_erase_by_part(int argc, char *const argv[])
 
 	dev = find_dev_num_by_partition_name(name);
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc = find_mmc_device(dev);
@@ -932,7 +932,7 @@ static int amlmmc_write_in_part(int argc, char *const argv[])
 	offset  = simple_strtoull(argv[4], NULL, 16);
 	size = simple_strtoull(argv[5], NULL, 16);
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc = find_mmc_device(dev);
@@ -1002,7 +1002,7 @@ static int amlmmc_write_in_card(int argc, char *const argv[])
 	offset  = simple_strtoull(argv[4], NULL, 16);
 	size = simple_strtoull(argv[5], NULL, 16);
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc = find_mmc_device(dev);
@@ -1058,7 +1058,7 @@ static int amlmmc_write_in_dev(int argc, char *const argv[])
 	blk = simple_strtoull(argv[4], NULL, 16);
 	cnt = simple_strtoull(argv[5], NULL, 16);
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc = find_mmc_device(dev);
@@ -1103,7 +1103,7 @@ static int amlmmc_read_in_dev(int argc, char *const argv[])
 	cnt = simple_strtoull(argv[5], NULL, 16);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -1135,7 +1135,7 @@ static int amlmmc_read_in_card(int argc, char *const argv[])
 	offset = simple_strtoull(argv[4], NULL, 16);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -1190,7 +1190,7 @@ static int amlmmc_read_in_part(int argc, char *const argv[])
 	size = simple_strtoull(argv[5], NULL, 16);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i name:%s\n", __func__, __LINE__, name);
 		return 1;
 	}
 
@@ -1429,7 +1429,7 @@ static int do_amlmmc_controller(cmd_tbl_t *cmdtp, int flag, int argc, char *cons
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -1476,7 +1476,7 @@ static int do_amlmmc_response(cmd_tbl_t *cmdtp, int flag, int argc, char *const 
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -1509,7 +1509,7 @@ static int do_amlmmc_status(cmd_tbl_t *cmdtp, int flag, int argc, char *const ar
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc = find_mmc_device(dev);
@@ -1565,7 +1565,7 @@ static int do_amlmmc_rescan(cmd_tbl_t *cmdtp, int flag, int argc, char * const a
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -2173,7 +2173,7 @@ static int do_amlmmc_write_protect(cmd_tbl_t *cmdtp, int flag, int argc, char *c
 		wp_type_str = argv[3];
 		dev = find_dev_num_by_partition_name(name);
 		if (dev < 0) {
-			printf("Error: Cannot find dev.\n");
+			printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 			return CMD_RET_USAGE;
 		}
 	} else {
@@ -2501,7 +2501,7 @@ static int do_amlmmc_clear_wp(cmd_tbl_t *cmdtp, int flag, int argc, char *const 
 		 name = argv[2];
 		 dev = find_dev_num_by_partition_name(name);
 		 if (dev < 0) {
-			 printf("Error: Cannot find dev.\n");
+			printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 			 return CMD_RET_USAGE;
 		 }
 	 } else {
@@ -2679,7 +2679,7 @@ static int do_amlmmc_send_wp_status(cmd_tbl_t *cmdtp,
 		name = argv[2];
 		dev = find_dev_num_by_partition_name(name);
 		if (dev < 0) {
-			printf("Error: Cannot find dev.\n");
+			printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 			return 1;
 		}
 	} else {
@@ -2731,7 +2731,7 @@ static int do_amlmmc_send_wp_type(cmd_tbl_t *cmdtp,
 		name = argv[2];
 		dev = find_dev_num_by_partition_name(name);
 		if (dev < 0) {
-			printf("Error: Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 			return 1;
 		}
 	} else {
@@ -2946,7 +2946,7 @@ static int do_amlmmc_clktest(cmd_tbl_t *cmdtp, int flag,
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc  = find_mmc_device(dev);
@@ -2978,7 +2978,7 @@ static int do_amlmmc_set_rxdelay(cmd_tbl_t *cmdtp, int flag,
 	delay2 = simple_strtoul(argv[4], NULL, 16);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc  = find_mmc_device(dev);
@@ -3017,7 +3017,7 @@ static int do_amlmmc_set_txdelay(cmd_tbl_t *cmdtp, int flag,
 	delay = simple_strtoul(argv[3], NULL, 16);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 	mmc  = find_mmc_device(dev);
@@ -3097,7 +3097,7 @@ static int do_amlmmc_set_vddee(cmd_tbl_t *cmdtp, int flag,
 	vddee = simple_strtoul(argv[3], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -3130,7 +3130,7 @@ static int do_amlmmc_show_vddee(cmd_tbl_t *cmdtp, int flag,
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -3167,7 +3167,7 @@ static int do_amlmmc_refix(cmd_tbl_t *cmdtp, int flag,
 	dev = simple_strtoul(argv[2], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -3202,7 +3202,7 @@ static int do_amlmmc_move_all_delay(cmd_tbl_t *cmdtp, int flag,
 	dev = simple_strtoul(argv[2], NULL, 10);
 	count = simple_strtoul(argv[3], NULL, 16);
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -3249,7 +3249,7 @@ static int do_amlmmc_move_sig_delay(cmd_tbl_t *cmdtp, int flag,
 	count = simple_strtoul(argv[4], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
@@ -3303,7 +3303,7 @@ static int do_amlmmc_line_eyetest(cmd_tbl_t *cmdtp, int flag,
 	line = simple_strtoul(argv[3], NULL, 10);
 
 	if (dev < 0) {
-		printf("Cannot find dev.\n");
+		printf("%s: Cannot find dev. line:%i\n", __func__, __LINE__);
 		return 1;
 	}
 
