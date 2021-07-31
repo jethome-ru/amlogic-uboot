@@ -1,4 +1,4 @@
-if JETHUB_D2_V1
+if JETHUB_J200_V1
 
 config SYS_CPU
 	string
@@ -6,7 +6,7 @@ config SYS_CPU
 
 config SYS_BOARD
 	string
-	default "jethub-d2_v1"
+	default "jethub_j200_v1"
 
 config SYS_VENDOR
 	string
@@ -17,6 +17,6 @@ config SYS_SOC
 	default "g12a"
 
 config SYS_CONFIG_NAME
-	default "jethub-d2_v1"
+	default "jethub_j200_v1"
 
 endif

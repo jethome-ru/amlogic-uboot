@@ -1,0 +1,6 @@
+JETHUB_J200_V1 BOARD
+M:	Vyacheslav Bocharov <devel@lexina.in>
+S:	Maintained
+F:	board/jethome/jethub_j200_v1/
+F:	board/jethome/configs/jethub_j200_v1.h
+F:	board/jethome/defconfigs/jethub_j200_v1_defconfig

@@ -145,11 +145,11 @@ static unsigned int detect_key(unsigned int suspend_from)
 	unsigned int is_gpiokey = 0;
 #endif
 
-	backup_remote_register();
+	//backup_remote_register();
 	init_remote();
 #ifdef CONFIG_CEC_WAKEUP
 	if (hdmi_cec_func_config & 0x1) {
-		remote_cec_hw_reset();
+		//remote_cec_hw_reset();
 		cec_node_init();
 	}
 #endif
@@ -221,7 +221,7 @@ static unsigned int detect_key(unsigned int suspend_from)
 	saradc_disable();
 #endif
 
-	restore_remote_register();
+	//restore_remote_register();
 
 	return exit_reason;
 }

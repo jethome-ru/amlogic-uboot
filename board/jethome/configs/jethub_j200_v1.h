@@ -15,8 +15,8 @@
 #define ODROID_BOARD_UUID		"9098004a-a1dd-11e8-98d0-529269fb1459"
 
 /* configs for CEC */
-#define CONFIG_CEC_OSD_NAME		"ODROID-C4"
-#define CONFIG_CEC_WAKEUP
+//#define CONFIG_CEC_OSD_NAME		"ODROID-C4"
+//#define CONFIG_CEC_WAKEUP
 
 #define CONFIG_CMDLINE_EDITING
 #define CONFIG_AUTO_COMPLETE
@@ -58,7 +58,7 @@
 #endif
 
 /* Enable GPIO Key Wakeup */
-#define CONFIG_GPIO_WAKEUP
+//#define CONFIG_GPIO_WAKEUP
 
 /* Serial config */
 #define CONFIG_CONS_INDEX			2

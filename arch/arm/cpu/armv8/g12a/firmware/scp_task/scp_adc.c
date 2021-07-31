@@ -197,6 +197,7 @@ int saradc_disable(void)
 	return 0;
 }
 
+#ifdef CONFIG_ADC_POWER_KEY_CHAN
 int check_adc_key_resume(void)
 {
 	int value;
@@ -208,7 +209,7 @@ int check_adc_key_resume(void)
 	if (min < 0)
 		min = 0;
 	max = CONFIG_ADC_POWER_KEY_VAL + 40;
-	if (CONFIG_ADC_POWER_KEY_VAL > 983)
+	if (max > 983)
 		max = 1023;
 
 	value = get_adc_sample_gxbb(CONFIG_ADC_POWER_KEY_CHAN);
@@ -217,3 +218,4 @@ int check_adc_key_resume(void)
 	else
 		return 0;
 }
+#endif

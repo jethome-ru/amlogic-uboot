@@ -2,8 +2,8 @@ config JETHUB_D1_V1
 	bool "Support JetHome D1 (J100) v1 board"
 	default n
 
-config JETHUB_D2_V1
-	bool "Support JetHome D1 (J200) v1 board"
+config JETHUB_J200_V1
+	bool "Support JetHome D2/H2 (J200) v1 board"
 	default n
 
 config JETHUB_H1_V1
@@ -14,8 +14,8 @@ if JETHUB_D1_V1
 source "board/jethome/jethub_d1_v1/Kconfig"
 endif
 
-if JETHUB_D2_V1
-source "board/jethome/jethub-d2_v1/Kconfig"
+if JETHUB_J200_V1
+source "board/jethome/jethub_j200_v1/Kconfig"
 endif
 
 if JETHUB_H1_V1

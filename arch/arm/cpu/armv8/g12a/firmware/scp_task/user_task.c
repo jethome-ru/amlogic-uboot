@@ -12,6 +12,7 @@
 #include "task_apis.h"
 #include "suspend.h"
 
+
 #define TASK_ID_IDLE 0
 #define TASK_ID_LOW_MB	3
 #define TASK_ID_HIGH_MB	4
@@ -161,16 +162,18 @@ void process_low_task(unsigned command)
 	    (unsigned *)(&(low_task_share_mem[TASK_COMMAND_OFFSET]));
 	/*unsigned *response =
 	    (unsigned *)(&(low_task_share_mem[TASK_RESPONSE_OFFSET]));*/
-	unsigned int cl_id = (command >> 16);
-	unsigned int size = *(pcommand + 1);
+	//unsigned int cl_id = (command >> 16);
+	//unsigned int size = *(pcommand + 1);
 	if ((command & 0xffff) == LOW_TASK_USR_DATA) {/*0-15bit: comd; 16-31bit: client_id*/
 		if ((command >> 16) == SCPI_CL_REMOTE) {
 			usr_pwr_key = *(pcommand + 2);/*tx_size locates at *(pcommand + 1)*/
 			dbg_print("pwr_key=",usr_pwr_key);
+#if 0
 		} else if (cl_id == SCPI_CL_SET_CEC_DATA) {
 			cec_update_config_data((pcommand + 2), size);
 		} else if (cl_id == SCPI_CL_UPDATE_PHYADDR) {
 			cec_update_phyaddress(*(pcommand + 2));
+#endif
 		}
 	}
 }
