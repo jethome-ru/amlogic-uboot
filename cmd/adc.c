@@ -92,7 +92,7 @@ static int do_adc_single(struct cmd_tbl *cmdtp, int flag, int argc,
 	else
 		printf("%u\n", data);
 
-	return CMD_RET_SUCCESS;
+	return data;
 }
 
 static int do_adc_scan(struct cmd_tbl *cmdtp, int flag, int argc,
