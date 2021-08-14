@@ -92,8 +92,30 @@ static int do_adc_single(struct cmd_tbl *cmdtp, int flag, int argc,
 	else
 		printf("%u\n", data);
 
-	return data;
+	return ret;
 }
+
+static int do_adc_single_test(struct cmd_tbl *cmdtp, int flag, int argc,
+			 char *const argv[])
+{
+	unsigned int data;
+	int ret, val;
+
+	if (argc < 4)
+		return CMD_RET_USAGE;
+
+	val = simple_strtol(argv[3], NULL, 0);
+	ret = adc_channel_single_shot(argv[1], simple_strtol(argv[2], NULL, 0),
+				      &data);
+	if (ret) {
+		printf("Error getting single shot for device %s channel %s\n",
+		       argv[1], argv[2]);
+		return CMD_RET_FAILURE;
+	}
+
+	return data > val;
+}
+
 
 static int do_adc_scan(struct cmd_tbl *cmdtp, int flag, int argc,
 		       char *const argv[])
@@ -150,10 +172,12 @@ static char adc_help_text[] =
 	"list - list ADC devices\n"
 	"adc info <name> - Get ADC device info\n"
 	"adc single <name> <channel> - Get Single data of ADC device channel\n"
+	"adc singletest <name> <channel> <val> - Return result of check (adc channel value > val), on error return 1\n"
 	"adc scan <name> [channel mask] - Scan all [or masked] ADC channels";
 
 U_BOOT_CMD_WITH_SUBCMDS(adc, "ADC sub-system", adc_help_text,
 	U_BOOT_SUBCMD_MKENT(list, 1, 1, do_adc_list),
 	U_BOOT_SUBCMD_MKENT(info, 2, 1, do_adc_info),
 	U_BOOT_SUBCMD_MKENT(single, 3, 1, do_adc_single),
+	U_BOOT_SUBCMD_MKENT(singletest, 4, 1, do_adc_single_test),
 	U_BOOT_SUBCMD_MKENT(scan, 3, 1, do_adc_scan));
