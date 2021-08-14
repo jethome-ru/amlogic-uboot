@@ -1,0 +1,6 @@
+JetHome JetHub D2 (J200)
+M:	Vyacheslav Bocharov <devel@lexina.in>
+S:	Maintained
+L:	u-boot-amlogic@groups.io
+F:	board/amlogic/jethub-j200/
+F:	configs/jethub_j200_v1_defconfig

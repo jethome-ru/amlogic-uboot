@@ -3,4 +3,4 @@
 # (C) Copyright 2021 JetHome
 # Author: Vyacheslav Bocharov <devel@lexina.in>
 
-obj-y	:= jethub-h1.o checkhw.o
+obj-y	:= jethub-j100.o checkhw.o

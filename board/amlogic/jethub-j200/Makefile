@@ -3,4 +3,4 @@
 # (C) Copyright 2020 BayLibre, SAS
 # Author: Neil Armstrong <narmstrong@baylibre.com>
 
-obj-y	:= jethub-d2.o
+obj-y	:= jethub-j200.o

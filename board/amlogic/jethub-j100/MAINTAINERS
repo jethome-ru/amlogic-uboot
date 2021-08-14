@@ -2,5 +2,5 @@ JetHome JetHub D1 (J100)
 M:	Vyacheslav Bocharov <devel@lexina.in>
 S:	Maintained
 L:	u-boot-amlogic@groups.io
-F:	board/amlogic/jethub-d1/
-F:	configs/jethub-d1_defconfig
+F:	board/amlogic/jethub-j100/
+F:	configs/jethub_j100_v1_defconfig
