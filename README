@@ -2,3 +2,6 @@ Summary:
 ========
 
 This directory contains the modified source code for U-Boot for Jethome boards.
+
+Branch:
+ - v2021.10-add_jethome_d1_h1 merged in uboot-next
