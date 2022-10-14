@@ -254,7 +254,7 @@
 #define CONFIG_CPU_CLK					1200 //MHz. Range: 600-1800, should be multiple of 24
 
 /* ddr */
-#define CONFIG_DDR_SIZE					1024 //MB //0 means ddr size auto-detect
+#define CONFIG_DDR_SIZE					0 //MB //0 means ddr size auto-detect
 #define CONFIG_DDR_CLK					792  //MHz, Range: 384-1200, should be multiple of 24
 #define CONFIG_DDR4_CLK					1008  //MHz, for boards which use different ddr chip
 /* DDR type setting
@@ -262,7 +262,7 @@
  *    CONFIG_DDR_TYPE_DDR3     : DDR3
  *    CONFIG_DDR_TYPE_DDR4     : DDR4
  *    CONFIG_DDR_TYPE_AUTO     : DDR3/DDR4 auto detect */
-#define CONFIG_DDR_TYPE					CONFIG_DDR_TYPE_DDR3//CONFIG_DDR_TYPE_AUTO
+#define CONFIG_DDR_TYPE					CONFIG_DDR_TYPE_AUTO//CONFIG_DDR_TYPE_AUTO
 /* DDR channel setting, please refer hardware design.
  *    CONFIG_DDR0_RANK0        : DDR0 rank0
  *    CONFIG_DDR0_RANK01       : DDR0 rank0+1
